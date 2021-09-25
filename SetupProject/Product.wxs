@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define TargetDir=$(var.VideoScreenSaver.TargetDir)?>
+  <Product Id="11DB7374-45A5-4885-9FB0-171069C819F0" Name="Video Screen Saver" Language="1033" Version="1.0.0.0" Manufacturer="Maduranga Gunasekara" UpgradeCode="867773a2-2179-4429-b2a0-332b714fae08">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
+    <Icon Id="AppIcon.exe" SourceFile="..\VideoScreenSaver\favicon.ico" />
+    <!--<PropertyRef Id="NETCOREAPP3.0" />
+    <Condition Message="This application requires .NET Framework 4.0 or above.">Installed OR NETCOREAPP3.0</Condition>-->
+    <CustomAction Id="LaunchApplication" Directory="INSTALLFOLDER" Impersonate="yes" ExeCommand="rundll32.exe desk.cpl,InstallScreenSaver [#VideoScreenSaver.scr]" />
+    <WixVariable Id="WixUILicenseRtf" Value="LicenseAgreement.rtf" />
+    <Feature Id="ProductFeature" Title="Video Screen Saver" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ProgramMenuDirShortCuts" />
+    </Feature>
+    <UI>
+      <UIRef Id="WixUI_Minimal" />
+      <TextStyle Id="DlgFont8" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="DlgTitleFont" FaceName="Tahoma" Size="8" Bold="yes" />
+      <Dialog Id="InstallDlg" Width="370" Height="270" Title="[ProductName] Setup" NoMinimize="yes">
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>{\DlgTitleFont}Ready to Install</Text>
+        </Control>
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>The Setup Wizard is ready to begin the installation</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
+        <Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="20">
+          <Text>To run this application, you must install .NET runtime. You can download the files with the link below</Text>
+        </Control>
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+        <Control Id="Install" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Text="Next">
+          <Publish Event="EndDialog" Value="Return" />
+        </Control>
+        <Control Id="DotNetDownloadUrl" Type="Hyperlink" Width="314" Height="15" X="26" Y="105">
+          <Text><![CDATA[<a href="https://dotnet.microsoft.com/download">https://dotnet.microsoft.com/download</a>]]></Text>
+        </Control>
+      </Dialog>
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">NOT Installed</Publish>
+    </UI>
+    <InstallUISequence>
+      <Show Dialog="InstallDlg" After="CostFinalize" />
+    </InstallUISequence>
+  </Product>
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="VideoScreenSaver" Name="Video Screen Saver">
+          <Directory Id="INSTALLFOLDER" />
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ProgramMenuDir" Name="Video Screen Saver">
+          <Component Id="ProgramMenuDirShortCuts" Guid="84924DF7-0DAB-4C27-ACA0-E24B197A0841">
+            <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+            <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Type="string" Name="InstallVersion" Value="[ProductVersion]" />
+            <Shortcut Id="UninstallProduct" Name="Uninstall" Description="Uninstalls the application" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" Icon="AppIcon.exe" IconIndex="0" />
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+  </Fragment>
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="VideoScreenSaver.dll" Guid="A2717BE2-9F78-47D9-BB29-794C6E34C76E">
+        <File Id="VideoScreenSaver.dll" Name="VideoScreenSaver.dll" Source="$(var.TargetDir)VideoScreenSaver.dll" />
+      </Component>
+      <Component Id="VideoScreenSaver.scr" Guid="7a213ad6-fa7d-45e0-bd32-01428473b761">
+        <File Id="VideoScreenSaver.scr" Name="VideoScreenSaver.scr" Source="$(var.TargetDir)VideoScreenSaver.scr">
+          <Shortcut Id="ExeShortcut" Directory="ProgramMenuDir" Name="Configure" Advertise="yes" Icon="AppIcon.exe" IconIndex="0" />
+        </File>
+      </Component>
+      <Component Id="videoplayback.mp4" Guid="CC8A90CF-4CD3-49D5-A8EA-5B98ECF65DD6">
+        <File Id="videoplayback.mp4" Name="videoplayback.mp4" Source="$(var.TargetDir)videoplayback.mp4" />
+      </Component>
+      <Component Id="VideoScreenSaver.runtimeconfig.json" Guid="54fd5082-b2c5-42fe-a26e-fc40382b8ad5">
+        <File Id="VideoScreenSaver.runtimeconfig.json" Name="VideoScreenSaver.runtimeconfig.json" Source="$(var.TargetDir)VideoScreenSaver.runtimeconfig.json" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>
